@@ -12,7 +12,7 @@
 
 ## 技术栈
 
-- Flask 2.0.3
+- Flask 2.3.3
 - SQLAlchemy (数据库ORM)
 - Bootstrap 4 (前端框架)
 - Flask-WTF (表单处理)
