@@ -1,13 +1,22 @@
-from flask import Flask
-app = Flask(__name__)
+import os
+from app import create_app, db
+from app.models import Post, Comment
+from flask_migrate import Migrate
 
-@app.route('/')
-def index():
-    return '<h1>Hello World!</h1>'
+app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+migrate = Migrate(app, db)
 
-@app.route('/user/<name>')
-def user(name):
-    return '<h1>Hello, %s!</h1>' % name
+@app.shell_context_processor
+def make_shell_context():
+    """为Flask shell添加上下文"""
+    return dict(db=db, Post=Post, Comment=Comment)
+
+@app.cli.command()
+def test():
+    """运行单元测试"""
+    import unittest
+    tests = unittest.TestLoader().discover('tests')
+    unittest.TextTestRunner(verbosity=2).run(tests)
 
 if __name__ == '__main__':
     app.run(debug=True)
