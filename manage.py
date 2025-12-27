@@ -19,4 +19,8 @@ def test():
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # WARNING: Debug mode should only be used for local development
+    # Never run with debug=True in production environments
+    # For production, use a proper WSGI server like Gunicorn or uWSGI
+    debug_mode = os.getenv('FLASK_ENV') == 'development'
+    app.run(debug=debug_mode)

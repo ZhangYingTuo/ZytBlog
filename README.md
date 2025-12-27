@@ -85,6 +85,15 @@ python manage.py test
 python -m pytest tests/
 ```
 
+## 安全注意事项
+
+⚠️ **重要提示**:
+
+- `manage.py` 仅用于开发环境。在生产环境中，请使用专业的 WSGI 服务器（如 Gunicorn、uWSGI）
+- 永远不要在生产环境中启用 debug 模式
+- 确保在生产环境中设置强密码的 `SECRET_KEY` 环境变量
+- 定期更新依赖包以修复安全漏洞
+
 ## 项目结构
 
 ```
