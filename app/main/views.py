@@ -3,21 +3,23 @@ from . import main
 from .. import db
 from ..models import Post, Comment
 from .forms import PostForm, CommentForm
+import sqlalchemy as sa
 
 @main.route('/')
 def index():
     """首页 - 显示所有博客文章"""
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
-        page=page, per_page=10, error_out=False)
+    query = sa.select(Post).order_by(Post.timestamp.desc())
+    pagination = db.paginate(query, page=page, per_page=10, error_out=False)
     posts = pagination.items
     return render_template('index.html', posts=posts, pagination=pagination)
 
 @main.route('/post/<int:id>')
 def post(id):
     """文章详情页"""
-    post = Post.query.get_or_404(id)
-    comments = Comment.query.filter_by(post_id=id).order_by(Comment.timestamp.asc()).all()
+    post = db.get_or_404(Post, id)
+    query = sa.select(Comment).filter_by(post_id=id).order_by(Comment.timestamp.asc())
+    comments = db.session.execute(query).scalars().all()
     form = CommentForm()
     return render_template('post.html', post=post, comments=comments, form=form)
 
@@ -40,7 +42,7 @@ def new_post():
 @main.route('/post/<int:id>/comment', methods=['POST'])
 def add_comment(id):
     """添加评论"""
-    post = Post.query.get_or_404(id)
+    post = db.get_or_404(Post, id)
     form = CommentForm()
     if form.validate_on_submit():
         comment = Comment(
